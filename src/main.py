@@ -2,9 +2,8 @@ from typing import List
 
 import ttkbootstrap as ttk
 from pages.mainpage import MainPage
-from pages.secondpage import SecondPage
 
-page_data = [MainPage, SecondPage]
+page_data = [MainPage]
 
 class App(ttk.Window):
     def __init__(self):
