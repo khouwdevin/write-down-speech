@@ -3,15 +3,19 @@ from typing import List
 import ttkbootstrap as ttk
 from pages.mainpage import MainPage
 
+from utils.util import get_path
+
 page_data = [MainPage]
 
 class App(ttk.Window):
     def __init__(self):
         super().__init__(themename = "journal")
-        self.title("Ttk Bootstrap Example")
+        self.title("speech to Text")
 
         self.geometry("600x300")
         self.minsize(600, 300)
+
+        self.iconbitmap(get_path("public\\icon.ico"))
 
         container = ttk.Frame(self)
         container.pack(side = "bottom", fill = "both", expand = 1)
