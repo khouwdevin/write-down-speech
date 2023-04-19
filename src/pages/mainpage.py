@@ -104,6 +104,8 @@ class MainPage(ttk.Frame):
             audio_path = path.split(self.entry_des.get())[0]
 
             try:
+                self.notifier_text("Converting audio...")
+
                 clip = mp.VideoFileClip(self.entry_file.get())
                 clip.audio.write_audiofile(path.join(audio_path, "temp.wav"))
 
@@ -115,11 +117,18 @@ class MainPage(ttk.Frame):
                 self.notifier_text("File not found")
                 return ""
         else:
+            self.notifier_text("Converting audio...")
+
             sound = AudioSegment.from_mp3(self.entry_file.get())
             sound.export(path.join(audio_path, "temp.wav"), format = "wav")
+
+            self.notifier_text("Convert audio complete")
             return path.join(audio_path, "temp.wav")
 
     def process(self):
+        self.process_btn.configure(state = "disabled")
+        self.controller.update()
+
         audio_path = self.define_audio_path()
         record_duration = self.entry_duration.get()
         recognizer = sr.Recognizer()
