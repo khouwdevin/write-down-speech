@@ -191,10 +191,10 @@ class MainPage(ttk.Frame):
                             file_system.writelines(word)
 
                     self.remove_processing("Processing complete", audio_path)
-                    self.after(5000, self.notifier_text(""))
+                    self.after(5000, lambda:self.notifier_text(""))
             except sr.RequestError:
                 self.remove_processing("No internet", audio_path)
-                self.after(5000, self.notifier_text(""))
+                self.after(5000, lambda:self.notifier_text(""))
             except:
                 self.remove_processing("Process error, please try again", audio_path)
-                self.after(5000, self.notifier_text(""))
+                self.after(5000, lambda:self.notifier_text(""))
