@@ -4,6 +4,7 @@ from typing import List
 
 import os
 from os import path
+import threading
 
 from time import gmtime, strftime
 
@@ -64,7 +65,7 @@ class MainPage(ttk.Frame):
 
         # Process Button
 
-        self.process_btn = ttk.Button(self, text = "Process", bootstyle=(INFO, OUTLINE), command = self.process, state = "disabled")
+        self.process_btn = ttk.Button(self, text = "Process", bootstyle=(INFO, OUTLINE), command = lambda:threading.Thread(target = self.process).start(), state = "disabled")
         self.process_btn.pack(pady = 10)
 
         # Notifier Section
