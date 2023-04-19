@@ -10,10 +10,10 @@ page_data = [MainPage]
 class App(ttk.Window):
     def __init__(self):
         super().__init__(themename = "journal")
-        self.title("speech to Text")
+        self.title("Speech to Text")
 
-        self.geometry("600x300")
-        self.minsize(600, 300)
+        self.geometry("600x400")
+        self.minsize(600, 400)
 
         self.iconbitmap(get_path("public\\icon.ico"))
 
