@@ -2,7 +2,7 @@
 
 # Speech to Text
 
-Speech to text from video to file txt, this app aim for people who want to transcribe a video that help of AI to write a scratch of transcribe than perfected by human.
+Speech to text from video to text, this app aim for people who want to transcribe a video or an audio with help of AI to write a rough transcript to save time so you don't have to write all of the words, just need to check them and fix the wrongs.
 
 # How to use
 
