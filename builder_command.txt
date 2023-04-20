@@ -1,0 +1,1 @@
+pyinstaller --noconfirm --onefile --windowed --icon "./public/icon.ico" --add-data "./public;public/" --collect-all "ttkbootstrap" "./src/main.py"        

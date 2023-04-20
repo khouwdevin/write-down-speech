@@ -27,7 +27,7 @@ class MainPage(ttk.Frame):
         self.entry_des_variable = ttk.StringVar()
         self.notifier_var = ttk.StringVar()
 
-        self.entry_duration = ttk.IntVar(value = 10)
+        self.entry_duration_variable = ttk.IntVar(value = 10)
 
         self.is_convert = ttk.BooleanVar(value = False)
 
@@ -63,7 +63,8 @@ class MainPage(ttk.Frame):
 
         ttk.Label(self, text = "Timestamp Duration", font = "TimesNewRoman 14").pack(pady = 10)
 
-        ttk.Entry(self, textvariable = str(self.entry_duration), justify = "center", width = 80).pack(pady = 10)
+        self.entry_duration = ttk.Entry(self, textvariable = str(self.entry_duration_variable), justify = "center", width = 80)
+        self.entry_duration.pack(pady = 10)
 
         # Process Button
 
@@ -109,6 +110,7 @@ class MainPage(ttk.Frame):
 
         self.entry_des.configure(state = state_str)
         self.entry_file.configure(state = state_str)
+        self.entry_duration.configure(state = state_str)
 
         self.controller.update()
 
@@ -144,7 +146,7 @@ class MainPage(ttk.Frame):
         self.set_entry(True)
 
         audio_path = self.define_audio_path()
-        record_duration = self.entry_duration.get()
+        record_duration = self.entry_duration_variable.get()
         recognizer = sr.Recognizer()
 
         result_list: List[str] = []
