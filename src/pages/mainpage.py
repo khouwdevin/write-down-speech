@@ -23,16 +23,16 @@ class MainPage(ttk.Frame):
 
         self.controller: ttk.Window = controller
 
-        self.entry_file = ttk.StringVar()
-        self.entry_des = ttk.StringVar()
+        self.entry_file_variable = ttk.StringVar()
+        self.entry_des_variable = ttk.StringVar()
         self.notifier_var = ttk.StringVar()
 
         self.entry_duration = ttk.IntVar(value = 10)
 
         self.is_convert = ttk.BooleanVar(value = False)
 
-        self.entry_file.trace("w", self.process_button_handler)
-        self.entry_des.trace("w", self.process_button_handler)
+        self.entry_file_variable.trace("w", self.process_button_handler)
+        self.entry_des_variable.trace("w", self.process_button_handler)
 
         # File Section
         ttk.Label(self, text = "File Location", font = "TimesNewRoman 14").pack(pady = 10)
@@ -42,7 +42,8 @@ class MainPage(ttk.Frame):
         frame_file.grid_columnconfigure(0, weight = 1)
         frame_file.grid_rowconfigure(0, weight = 1)
 
-        ttk.Entry(frame_file, textvariable = self.entry_file, justify = "center", width = 80).grid(column = 1, row = 1, padx = 10)
+        self.entry_file = ttk.Entry(frame_file, textvariable = self.entry_file_variable, justify = "center", width = 80)
+        self.entry_file.grid(column = 1, row = 1, padx = 10)
         ttk.Button(frame_file, text = "Browse", command = lambda:self.select_dialog(0)).grid(column = 2, row = 1)
 
         # Destination Section
@@ -54,7 +55,8 @@ class MainPage(ttk.Frame):
         frame_des.grid_columnconfigure(0, weight = 1)
         frame_des.grid_rowconfigure(0, weight = 1)
 
-        ttk.Entry(frame_des, textvariable = self.entry_des, justify = "center", width = 80).grid(column = 1, row = 3, padx = 10)
+        self.entry_des = ttk.Entry(frame_des, textvariable = self.entry_des_variable, justify = "center", width = 80)
+        self.entry_des.grid(column = 1, row = 3, padx = 10)
         ttk.Button(frame_des, text = "Browse", command = lambda:self.select_dialog(1)).grid(column = 2, row = 3)
 
         # Duration Section
@@ -73,16 +75,16 @@ class MainPage(ttk.Frame):
         ttk.Label(self, textvariable = self.notifier_var, font = "TimesNewRoman 14").pack(pady = 10)
 
     def process_button_handler(self, *args):
-        if (len(self.entry_file.get()) > 0 and len(self.entry_des.get()) > 0):
+        if (len(self.entry_file_variable.get()) > 0 and len(self.entry_des_variable.get()) > 0):
             self.process_btn.configure(state = "enabled")
         else:
             self.process_btn.configure(state = "disabled")
 
     def select_dialog(self, status: int):
         if (status == 0):
-            self.entry_file.set(filedialog.askopenfilename(title = "Choose file", initialdir = ".", filetypes = [("All", "*.mp4 *.mp3")]))
+            self.entry_file_variable.set(filedialog.askopenfilename(title = "Choose file", initialdir = ".", filetypes = [("All", "*.mp4 *.mp3")]))
         else:
-            self.entry_des.set(filedialog.asksaveasfilename(title = "Choose directory", initialdir = ".", confirmoverwrite = True, defaultextension = "*.*", initialfile = "speech_to_text", filetypes = [("text", "*.txt")]))
+            self.entry_des_variable.set(filedialog.asksaveasfilename(title = "Choose directory", initialdir = ".", confirmoverwrite = True, defaultextension = "*.*", initialfile = "speech_to_text", filetypes = [("text", "*.txt")]))
     
     def notifier_text(self, text_message):
         self.notifier_var.set(text_message)
@@ -94,20 +96,32 @@ class MainPage(ttk.Frame):
 
         self.notifier_text(text)
 
-        self.entry_file.set("")
-        self.entry_des.set("")
+        self.entry_file_variable.set("")
+        self.entry_des_variable.set("")
         self.is_convert.set(False)
+        self.set_entry(False)
+    
+    def set_entry(self, is_active: bool):
+        state_str = "disabled" if is_active else "active"
+
+        if (is_active):
+            self.process_btn.configure(state = state_str)
+
+        self.entry_des.configure(state = state_str)
+        self.entry_file.configure(state = state_str)
+
+        self.controller.update()
 
     def define_audio_path(self):
-        file_ext = path.splitext(path.split(self.entry_file.get())[1])
+        file_ext = path.splitext(path.split(self.entry_file_variable.get())[1])
         
         if (file_ext[1] == ".mp4"):
-            audio_path = path.split(self.entry_des.get())[0]
+            audio_path = path.split(self.entry_des_variable.get())[0]
 
             try:
                 self.notifier_text("Converting audio...")
 
-                clip = mp.VideoFileClip(self.entry_file.get())
+                clip = mp.VideoFileClip(self.entry_file_variable.get())
                 clip.audio.write_audiofile(path.join(audio_path, "temp.wav"))
 
                 self.is_convert.set(True)
@@ -120,15 +134,14 @@ class MainPage(ttk.Frame):
         else:
             self.notifier_text("Converting audio...")
 
-            sound = AudioSegment.from_mp3(self.entry_file.get())
+            sound = AudioSegment.from_mp3(self.entry_file_variable.get())
             sound.export(path.join(audio_path, "temp.wav"), format = "wav")
 
             self.notifier_text("Convert audio complete")
             return path.join(audio_path, "temp.wav")
 
     def process(self):
-        self.process_btn.configure(state = "disabled")
-        self.controller.update()
+        self.set_entry(True)
 
         audio_path = self.define_audio_path()
         record_duration = self.entry_duration.get()
@@ -136,8 +149,8 @@ class MainPage(ttk.Frame):
 
         result_list: List[str] = []
 
-        if (path.exists(self.entry_des.get())):
-            os.remove(self.entry_des.get())
+        if (path.exists(self.entry_des_variable.get())):
+            os.remove(self.entry_des_variable.get())
 
         if (len(audio_path) > 0):
             audio = sr.AudioFile(audio_path)
@@ -145,8 +158,8 @@ class MainPage(ttk.Frame):
             duration = int(WAVE(audio_path).info.length)
             
             try:
-                if (path.exists(self.entry_des.get())):
-                    os.remove(self.entry_des.get())
+                if (path.exists(self.entry_des_variable.get())):
+                    os.remove(self.entry_des_variable.get())
 
                 if (len(audio_path) > 0):
                     audio = sr.AudioFile(audio_path)
@@ -186,7 +199,7 @@ class MainPage(ttk.Frame):
                             result_list.append(result)
                             result_list.append("\n\n")
 
-                    with open(file = self.entry_des.get(), mode = "a", encoding = "utf8") as file_system:
+                    with open(file = self.entry_des_variable.get(), mode = "a", encoding = "utf8") as file_system:
                         for word in result_list:
                             file_system.writelines(word)
 
